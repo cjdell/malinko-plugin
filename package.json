@@ -1,0 +1,12 @@
+{
+  "name": "malinko-plugin",
+  "version": "1.0.1",
+  "cordova": {
+    "id": "malinko-plugin",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "description": "Bespoke Malinko Plugin"
+}

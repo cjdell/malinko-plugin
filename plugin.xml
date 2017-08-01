@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    id="malinko-plugin"
+    version="1.0.1">
+    <name>Malinko Plugin</name>
+    <description></description>
+    <license>MIT</license>
+    <keywords></keywords>
+
+    <!-- android -->
+    <platform name="android">
+      <js-module src="www/plugin.js" name="plugin">
+        <runs/>
+
+        <!-- This is the window variable name you want, like window.MalinkoPlugin -->
+        <clobbers target="MalinkoPlugin" />
+      </js-module>
+
+      <config-file target="res/xml/config.xml" parent="/*">
+        <feature name="MalinkoPlugin">
+          <param name="android-package" value="org.liquidbronze.MalinkoPlugin" />
+          <param name="onload" value="true" />
+        </feature>
+      </config-file>
+
+      <source-file src="src/android/org/liquidbronze/LocationActivity.java" target-dir="src/org/liquidbronze/" />
+      <source-file src="src/android/org/liquidbronze/MalinkoPlugin.java" target-dir="src/org/liquidbronze/" />
+      <source-file src="src/android/org/liquidbronze/VolumeListenerService.java" target-dir="src/org/liquidbronze/" />
+
+      <source-file src="src/android/activity_location.xml" target-dir="res/layout/" />
+
+      <config-file target="AndroidManifest.xml" parent="/manifest">
+         <uses-permission android:name="android.permission.WAKE_LOCK" />
+         <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+         <uses-permission android:name="android.permission.VIBRATE" />
+         <uses-feature android:name="android.hardware.location.gps" />
+      </config-file>
+
+      <config-file target="AndroidManifest.xml" parent="/manifest/application">
+        <service android:name="org.liquidbronze.VolumeListenerService" />
+        <activity android:label="Location" android:name="org.liquidbronze.LocationActivity" android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+      </config-file>
+
+      <framework src="src/android/easylocation.gradle" custom="true" type="gradleReference" />
+    </platform>
+
+    <!-- ios -->
+    <platform name="ios">
+        <js-module src="www/plugin.js" name="plugin">
+            <runs/>
+            <clobbers target="MalinkoPlugin" />
+        </js-module>
+
+        <config-file target="config.xml" parent="/*">
+            <feature name="MalinkoPlugin">
+                <param name="ios-package" value="MalinkoPlugin" onload="true" />
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/MalinkoPlugin.h" />
+        <source-file src="src/ios/MalinkoPlugin.m" />
+    </platform>
+
+    <!-- browser -->
+    <platform name="browser">
+        <js-module src="src/browser/MalinkoPluginStub.js" name="plugin">
+            <runs/>
+            <clobbers target="MalinkoPlugin" />
+        </js-module>
+    </platform>
+</plugin>
