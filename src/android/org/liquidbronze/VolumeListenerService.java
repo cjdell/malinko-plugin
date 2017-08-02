@@ -234,11 +234,16 @@ public class VolumeListenerService extends Service {
                 HttpURLConnection urlConnection = null;
 
                 try {
-                    URL url = new URL("http://buz.co/log.php");
+                    URL url = new URL("https://my.malinkoapp.com/api/v3/silent");
 
                     urlConnection = (HttpURLConnection) url.openConnection();
 
                     urlConnection.setRequestMethod("POST");
+
+                    urlConnection.setRequestProperty("Content-Type", "application/json");
+                    urlConnection.setRequestProperty("Accept", "application/json");
+                    urlConnection.setRequestProperty("Authorization", "Bearer " + mAccessToken);
+
                     urlConnection.setUseCaches(false);
                     urlConnection.setDoInput(true);
                     urlConnection.setDoOutput(true);
@@ -264,7 +269,7 @@ public class VolumeListenerService extends Service {
                     JSONObject response = new JSONObject(responseString);
                     String success = response.getString("success");
 
-                    successNotification(mLocation);
+                    successNotification(mLocation, success);
 
                     showToastInIntentService(success);
                 } catch (Exception ex) {
@@ -278,7 +283,7 @@ public class VolumeListenerService extends Service {
         }).start();
     }
 
-    private void successNotification(Location loc) {
+    private void successNotification(Location loc, String success) {
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         v.vibrate(500);
@@ -289,7 +294,7 @@ public class VolumeListenerService extends Service {
 
         Notification n = new Notification.Builder(this)
                 .setSmallIcon(android.R.drawable.ic_menu_send)
-                .setContentTitle("Silent Alarm Sent")
+                .setContentTitle(success)
                 .setContentText(dateString)
                 .setAutoCancel(true)
                 .getNotification();
