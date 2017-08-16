@@ -24,6 +24,7 @@ import android.os.Vibrator;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
@@ -40,10 +41,11 @@ public class VolumeListenerService extends Service {
     private static final String TAG = "MalinkoPlugin";
 
     private static final int GPS_UPDATE_INTERVAL = 3 * 60 * 1000;
-    private static final int GPS_UPDATE_DISTANCE = 10;;
+    private static final int GPS_UPDATE_DISTANCE = 10;
+    ;
     private static final int MIN_DELTA_TIME = 5 * 1000;
 
-    public static final String ACCESS_TOKEN = "access_token";
+    public static final String OPTIONS = "access_token";
     public static final String LOCATION = "location";
 
     private LocationManager mLocationManager;
@@ -57,6 +59,8 @@ public class VolumeListenerService extends Service {
     private int mMidVolume;
 
     private String mAccessToken;
+    private String mMobileNumber;
+    private String mAlertMessage;
     private Location mLocation;
 
     private int mOngoingNotificationId;
@@ -124,7 +128,17 @@ public class VolumeListenerService extends Service {
 
         setupLocationUpdates();
 
-        mAccessToken = intent.getStringExtra(ACCESS_TOKEN);
+        try {
+            JSONObject options = new JSONObject(intent.getStringExtra(OPTIONS));
+
+            mAccessToken = options.getString("accessToken");
+            mMobileNumber = options.getString("mobileNumber");
+            mAlertMessage = options.getString("alertMessage");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         mLocation = intent.getParcelableExtra(LOCATION);
 
         if (mAccessToken == null || mLocation == null) return Service.START_REDELIVER_INTENT;
@@ -191,7 +205,18 @@ public class VolumeListenerService extends Service {
         Intent notificationIntent = new Intent(this, LocationActivity.class);
         notificationIntent.setAction(xId);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        notificationIntent.putExtra(VolumeListenerService.ACCESS_TOKEN, mAccessToken);
+
+        JSONObject options = new JSONObject();
+
+        try {
+            options.put("accessToken", mAccessToken);
+            options.put("mobileNumber", mMobileNumber);
+            options.put("alertMessage", mAlertMessage);
+
+            notificationIntent.putExtra(VolumeListenerService.OPTIONS, options.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         mPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
@@ -219,7 +244,7 @@ public class VolumeListenerService extends Service {
     private Notification getOngoingNotification() {
         Date date = (new Date(mLocation.getTime()));
         @SuppressLint("DefaultLocale")
-        String dateString = String.format("%tT", date);;
+        String dateString = String.format("%tT", date);
 
         return new Notification.Builder(this)
                 .setSmallIcon(android.R.drawable.btn_star)
@@ -286,6 +311,8 @@ public class VolumeListenerService extends Service {
                     successNotification(mLocation, success);
 
                     showToastInIntentService(success);
+
+                    mLastTimeTriggered = (new Date()).getTime();
                 } catch (Exception ex) {
                     failureNotification(ex);
 
@@ -304,7 +331,7 @@ public class VolumeListenerService extends Service {
 
         Date date = (new Date(mLocation.getTime()));
         @SuppressLint("DefaultLocale")
-        String dateString = String.format("GPS fix at %tF %tT", date, date);;
+        String dateString = String.format("GPS fix at %tF %tT", date, date);
 
         Notification n = new Notification.Builder(this)
                 .setSmallIcon(android.R.drawable.ic_menu_send)

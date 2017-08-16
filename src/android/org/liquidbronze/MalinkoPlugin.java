@@ -45,9 +45,9 @@ public class MalinkoPlugin extends CordovaPlugin {
 
         } else if (action.equals("enableSilentAlert")) {
 
-            String accessToken = args.getString(0);
+            JSONObject options = args.getJSONObject(0);
 
-            this.enableSilentAlert(accessToken);
+            this.enableSilentAlert(options);
 
             final PluginResult result = new PluginResult(PluginResult.Status.OK);
             callbackContext.sendPluginResult(result);
@@ -91,11 +91,11 @@ public class MalinkoPlugin extends CordovaPlugin {
         return -1;
     }
 
-    private void enableSilentAlert(String accessToken) {
+    private void enableSilentAlert(JSONObject options) {
         if (!getSilentAlertStatus()) {
             Intent notificationIntent = new Intent(this.webView.getContext(), LocationActivity.class);
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            notificationIntent.putExtra(VolumeListenerService.ACCESS_TOKEN, accessToken);
+            notificationIntent.putExtra(VolumeListenerService.OPTIONS, options.toString());
             this.webView.getContext().startActivity(notificationIntent);
         } else {
             Log.d(TAG, "VolumeListenerService already running");

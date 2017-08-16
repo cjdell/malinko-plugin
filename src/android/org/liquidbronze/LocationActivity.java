@@ -21,7 +21,7 @@ import java.util.Date;
 
 public class LocationActivity extends EasyLocationActivity {
 
-    private String mAccessToken;
+    private String mOptionsJson;
 
     private Button btnRefreshLocation;
 
@@ -35,7 +35,7 @@ public class LocationActivity extends EasyLocationActivity {
     protected void onResume() {
         super.onResume();
 
-        mAccessToken = getIntent().getStringExtra(VolumeListenerService.ACCESS_TOKEN);
+        mOptionsJson = getIntent().getStringExtra(VolumeListenerService.OPTIONS);
 
         requestNewLocation();
     }
@@ -74,7 +74,7 @@ public class LocationActivity extends EasyLocationActivity {
 //        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
 
         Intent i = new Intent(this, VolumeListenerService.class);
-        i.putExtra(VolumeListenerService.ACCESS_TOKEN, mAccessToken);
+        i.putExtra(VolumeListenerService.OPTIONS, mOptionsJson);
         i.putExtra(VolumeListenerService.LOCATION, loc);
         this.startService(i);
 
