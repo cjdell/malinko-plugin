@@ -1,8 +1,12 @@
 package org.liquidbronze;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -21,9 +25,11 @@ import java.util.Date;
 
 public class LocationActivity extends EasyLocationActivity {
 
+    private static final int REQUEST_SEND_SMS = 321321321;
+
     private String mOptionsJson;
 
-    private Button btnRefreshLocation;
+    private Location mLocation = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +44,27 @@ public class LocationActivity extends EasyLocationActivity {
         mOptionsJson = getIntent().getStringExtra(VolumeListenerService.OPTIONS);
 
         requestNewLocation();
+    }
+
+    private void requestSmsPermission() {
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, REQUEST_SEND_SMS);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_SEND_SMS) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startListener();
+            } else {
+                Toast.makeText(this, "Failed to acquire SMS sending permissions", Toast.LENGTH_LONG).show();
+
+                startListener();
+            }
+
+            return;
+        }
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     private void requestNewLocation() {
@@ -66,19 +93,11 @@ public class LocationActivity extends EasyLocationActivity {
 
     @Override
     public void onLocationReceived(Location loc) {
-//        Date date = new Date(loc.getTime());
-//
-//        @SuppressLint("DefaultLocale")
-//        String msg = String.format("Lat %f Lng %f Acc %f\nTime %tF %tT", loc.getLatitude(), loc.getLongitude(), loc.getAccuracy(), date, date);
-//
-//        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+        if (mLocation == null) {
+            mLocation = loc;
 
-        Intent i = new Intent(this, VolumeListenerService.class);
-        i.putExtra(VolumeListenerService.OPTIONS, mOptionsJson);
-        i.putExtra(VolumeListenerService.LOCATION, loc);
-        this.startService(i);
-
-        finish();
+            requestSmsPermission();
+        }
     }
 
     @Override
@@ -89,5 +108,14 @@ public class LocationActivity extends EasyLocationActivity {
     @Override
     public void onLocationProviderDisabled() {
 
+    }
+
+    private void startListener() {
+        Intent i = new Intent(this, VolumeListenerService.class);
+        i.putExtra(VolumeListenerService.OPTIONS, mOptionsJson);
+        i.putExtra(VolumeListenerService.LOCATION, mLocation);
+        this.startService(i);
+
+        finish();
     }
 }
