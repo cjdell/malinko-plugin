@@ -1,20 +1,34 @@
 var PLUGIN_NAME = 'MalinkoPlugin';
 
+var silentAlertSet = null;
+
 var MalinkoPlugin = {
-  getSilentAlarmStatus: function(cb) {
-    setTimeout(function() {
+  getSilentAlertStatus: function (cb) {
+    setTimeout(function () {
       return cb(null, true);
     }, 500);
   },
-  enableSilentAlarm: function(accessToken, cb) {
-    setTimeout(function() {
-      return cb(null);
-    }, 0);
+  getSilentAlertSet: function (cb) {
+    setTimeout(function () {
+      return cb(null, silentAlertSet);
+    }, 500);
   },
-  disableSilentAlarm: function(cb) {
-    setTimeout(function() {
+  enableSilentAlert: function (options, cb) {
+    // Fake silent alert trigger 5 seconds after enabling...
+    setTimeout(function () {
+      silentAlertSet = (new Date()).getTime();
+    }, 5000);
+
+    setTimeout(function () {
       return cb(null);
-    }, 0);
+    }, 500);
+  },
+  disableSilentAlert: function (cb) {
+    silentAlertSet = null;
+
+    setTimeout(function () {
+      return cb(null);
+    }, 500);
   }
 };
 

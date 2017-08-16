@@ -3,8 +3,8 @@ var exec = require('cordova/exec');
 var PLUGIN_NAME = 'MalinkoPlugin';
 
 var MalinkoPlugin = {
-  getSilentAlarmStatus: function (cb) {
-    exec(successCallback, errorCallback, PLUGIN_NAME, 'getSilentAlarmStatus', []);
+  getSilentAlertStatus: function (cb) {
+    exec(successCallback, errorCallback, PLUGIN_NAME, 'getSilentAlertStatus', []);
 
     function successCallback(res) {
       return cb(null, res);
@@ -14,8 +14,22 @@ var MalinkoPlugin = {
       return cb(err);
     }
   },
-  enableSilentAlarm: function (accessToken, cb) {
-    exec(successCallback, errorCallback, PLUGIN_NAME, 'enableSilentAlarm', [accessToken]);
+  getSilentAlertSet: function (cb) {
+    exec(successCallback, errorCallback, PLUGIN_NAME, 'getSilentAlertSet', []);
+
+    function successCallback(res) {
+      return cb(null, new Date(res));
+    }
+
+    function errorCallback(err) {
+      return cb(err);
+    }
+  },
+  /**
+   * @param {{accessToken, mobileNumber, alertMessage}} options
+   */
+  enableSilentAlert: function (options, cb) {
+    exec(successCallback, errorCallback, PLUGIN_NAME, 'enableSilentAlert', [options]);
 
     function successCallback(res) {
       return cb(null);
@@ -25,8 +39,8 @@ var MalinkoPlugin = {
       return cb(err);
     }
   },
-  disableSilentAlarm: function (cb) {
-    exec(successCallback, errorCallback, PLUGIN_NAME, 'disableSilentAlarm', []);
+  disableSilentAlert: function (cb) {
+    exec(successCallback, errorCallback, PLUGIN_NAME, 'disableSilentAlert', []);
 
     function successCallback(res) {
       return cb(null);
