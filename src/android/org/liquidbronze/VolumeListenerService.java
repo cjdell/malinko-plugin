@@ -62,7 +62,11 @@ public class VolumeListenerService extends Service {
     private int mOngoingNotificationId;
     private int mLastNotificationId;
 
+    private float mLastTimeTriggered = -1;
+
     private PendingIntent mPendingIntent;
+
+    public static VolumeListenerService CurrentInstance = null;
 
     private class LocationListener implements android.location.LocationListener {
         private LocationListener() {
@@ -102,6 +106,16 @@ public class VolumeListenerService extends Service {
         mLastNotificationId = r.nextInt();
 
         mLocationListener = new LocationListener();
+
+        CurrentInstance = this;
+    }
+
+    public float getLastTimeTriggered() {
+        return mLastTimeTriggered;
+    }
+
+    public void clearLastTimeTriggered() {
+        mLastTimeTriggered = -1;
     }
 
     @Override
@@ -324,6 +338,8 @@ public class VolumeListenerService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        CurrentInstance = null;
 
         cleanUp();
 

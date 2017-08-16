@@ -29,35 +29,70 @@ public class MalinkoPlugin extends CordovaPlugin {
     }
 
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
-        if (action.equals("getSilentAlarmStatus")) {
+        if (action.equals("getSilentAlertStatus")) {
 
-            boolean status = isMyServiceRunning(VolumeListenerService.class);
+            boolean status = getSilentAlertStatus();
 
             final PluginResult result = new PluginResult(PluginResult.Status.OK, status);
             callbackContext.sendPluginResult(result);
 
-        } else if (action.equals("enableSilentAlarm")) {
+        } else if (action.equals("getSilentAlertSet")) {
+
+            float time = getSilentAlertSet();
+
+            final PluginResult result = new PluginResult(PluginResult.Status.OK, time);
+            callbackContext.sendPluginResult(result);
+
+        } else if (action.equals("enableSilentAlert")) {
 
             String accessToken = args.getString(0);
 
-            this.enableSilentAlarm(accessToken);
+            this.enableSilentAlert(accessToken);
 
             final PluginResult result = new PluginResult(PluginResult.Status.OK);
             callbackContext.sendPluginResult(result);
 
-        } else if (action.equals("disableSilentAlarm")) {
+        } else if (action.equals("disableSilentAlert")) {
 
-            this.disabledSilentAlarm();
+            this.disableSilentAlert();
 
             final PluginResult result = new PluginResult(PluginResult.Status.OK);
             callbackContext.sendPluginResult(result);
+
+        } else if (action.equals("cancelSilentAlert")) {
+
+            this.cancelSilentAlert();
+
+            final PluginResult result = new PluginResult(PluginResult.Status.OK);
+            callbackContext.sendPluginResult(result);
+
         }
 
         return true;
     }
 
-    private void enableSilentAlarm(String accessToken) {
-        if (!isMyServiceRunning(VolumeListenerService.class)) {
+    private boolean getSilentAlertStatus() {
+        ActivityManager manager = (ActivityManager) this.webView.getContext().getSystemService(Context.ACTIVITY_SERVICE);
+
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (VolumeListenerService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private float getSilentAlertSet() {
+        if (VolumeListenerService.CurrentInstance != null) {
+            return VolumeListenerService.CurrentInstance.getLastTimeTriggered();
+        }
+
+        return -1;
+    }
+
+    private void enableSilentAlert(String accessToken) {
+        if (!getSilentAlertStatus()) {
             Intent notificationIntent = new Intent(this.webView.getContext(), LocationActivity.class);
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             notificationIntent.putExtra(VolumeListenerService.ACCESS_TOKEN, accessToken);
@@ -67,8 +102,8 @@ public class MalinkoPlugin extends CordovaPlugin {
         }
     }
 
-    private void disabledSilentAlarm() {
-        if (isMyServiceRunning(VolumeListenerService.class)) {
+    private void disableSilentAlert() {
+        if (getSilentAlertStatus()) {
             Intent i = new Intent(this.webView.getContext(), VolumeListenerService.class);
             this.webView.getContext().stopService(i);
         } else {
@@ -76,22 +111,16 @@ public class MalinkoPlugin extends CordovaPlugin {
         }
     }
 
+    private void cancelSilentAlert() {
+        if (VolumeListenerService.CurrentInstance != null) {
+            VolumeListenerService.CurrentInstance.clearLastTimeTriggered();
+        }
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
 
-        this.disabledSilentAlarm();
-    }
-
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) this.webView.getContext().getSystemService(Context.ACTIVITY_SERVICE);
-
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-
-        return false;
+        this.disableSilentAlert();
     }
 }
