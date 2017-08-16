@@ -28,15 +28,22 @@ var MalinkoPlugin = {
     }, 500);
   },
   disableSilentAlert: function (cb) {
-    silentAlertSet = null;
-
     setTimeout(function () {
+      silentAlertSet = null;
       silentAlertEnabled = false;
       console.log('MalinkoPluginStub: disableSilentAlert');
 
       return cb(null);
     }, 500);
-  }
+  },
+  cancelSilentAlert: function (cb) {
+    setTimeout(function () {
+      silentAlertSet = null;
+      console.log('MalinkoPluginStub: cancelSilentAlert');
+
+      return cb(null);
+    }, 500);
+  },
 };
 
 module.exports = MalinkoPlugin;

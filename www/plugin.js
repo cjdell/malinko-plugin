@@ -49,7 +49,18 @@ var MalinkoPlugin = {
     function errorCallback(err) {
       return cb(err);
     }
-  }
+  },
+  cancelSilentAlert: function (cb) {
+    exec(successCallback, errorCallback, PLUGIN_NAME, 'cancelSilentAlert', []);
+
+    function successCallback(res) {
+      return cb(null);
+    }
+
+    function errorCallback(err) {
+      return cb(err);
+    }
+  },
 };
 
 module.exports = MalinkoPlugin;
