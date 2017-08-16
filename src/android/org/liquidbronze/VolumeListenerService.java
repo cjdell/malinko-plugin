@@ -21,6 +21,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.os.Vibrator;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -179,13 +180,13 @@ public class VolumeListenerService extends Service {
                         Log.d("volume", "down");
                         mPreviousVolume = currentVolume;
 
-                        sendSilentAlarm();
+                        trigger();
                     } else if (delta < 0) {
                         Log.d("volume", "volume " + currentVolume);
                         Log.d("volume", "up");
                         mPreviousVolume = currentVolume;
 
-                        sendSilentAlarm();
+                        trigger();
                     }
                 }
 
@@ -248,7 +249,7 @@ public class VolumeListenerService extends Service {
 
         return new Notification.Builder(this)
                 .setSmallIcon(android.R.drawable.btn_star)
-                .setContentTitle("Silent Alarm Enabled")
+                .setContentTitle("Silent Alert Enabled")
                 .setContentText("Tap to update. Last GPS fix at " + dateString)
                 .setOngoing(true)
                 .setAutoCancel(true)
@@ -267,7 +268,24 @@ public class VolumeListenerService extends Service {
         }
     }
 
-    private void sendSilentAlarm() {
+    private void trigger() {
+        sendSms();
+
+        sendSilentAlert();
+    }
+
+    private void sendSms() {
+        try {
+            SmsManager smsManager = SmsManager.getDefault();
+            smsManager.sendTextMessage(mMobileNumber, null, mAlertMessage, null, null);
+            Toast.makeText(getApplicationContext(), "SMS Sent", Toast.LENGTH_LONG).show();
+        } catch (Exception ex) {
+            Toast.makeText(getApplicationContext(), ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+    }
+
+    private void sendSilentAlert() {
         new Thread(new Runnable() {
             public void run() {
                 HttpURLConnection urlConnection = null;
@@ -350,7 +368,7 @@ public class VolumeListenerService extends Service {
     private void failureNotification(Exception ex) {
         Notification n = new Notification.Builder(this)
                 .setSmallIcon(android.R.drawable.stat_notify_error)
-                .setContentTitle("Silent Alarm FAILED")
+                .setContentTitle("Silent Alert FAILED")
                 .setContentText(ex.toString())
                 .setAutoCancel(true)
                 .getNotification();
@@ -374,7 +392,7 @@ public class VolumeListenerService extends Service {
 
         notificationManager.cancel(mOngoingNotificationId);
 
-        showToastInIntentService("Silent alarm disabled");
+        showToastInIntentService("Silent Alert disabled");
     }
 
     private void cleanUp() {
