@@ -1,11 +1,12 @@
 var PLUGIN_NAME = 'MalinkoPlugin';
 
+var silentAlertEnabled = false;
 var silentAlertSet = null;
 
 var MalinkoPlugin = {
   getSilentAlertStatus: function (cb) {
     setTimeout(function () {
-      return cb(null, true);
+      return cb(null, silentAlertEnabled);
     }, 500);
   },
   getSilentAlertSet: function (cb) {
@@ -20,6 +21,9 @@ var MalinkoPlugin = {
     }, 5000);
 
     setTimeout(function () {
+      silentAlertEnabled = true;
+      console.log('MalinkoPluginStub: enableSilentAlert');
+
       return cb(null);
     }, 500);
   },
@@ -27,6 +31,9 @@ var MalinkoPlugin = {
     silentAlertSet = null;
 
     setTimeout(function () {
+      silentAlertEnabled = false;
+      console.log('MalinkoPluginStub: disableSilentAlert');
+
       return cb(null);
     }, 500);
   }
