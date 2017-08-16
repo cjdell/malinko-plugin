@@ -18,7 +18,15 @@ var MalinkoPlugin = {
     exec(successCallback, errorCallback, PLUGIN_NAME, 'getSilentAlertSet', []);
 
     function successCallback(res) {
-      return cb(null, new Date(res));
+      var date;
+
+      if (typeof res === 'number' && res !== -1) {
+        date = new Date(res)
+      } else {
+        date = null;
+      }
+
+      return cb(null, date);
     }
 
     function errorCallback(err) {
