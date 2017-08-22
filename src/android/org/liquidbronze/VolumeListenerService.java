@@ -366,18 +366,20 @@ public class VolumeListenerService extends Service {
     }
 
     private void failureNotification(Exception ex) {
-        Notification n = new Notification.Builder(this)
-                .setSmallIcon(android.R.drawable.stat_notify_error)
-                .setContentTitle("Silent Alert FAILED")
-                .setContentText(ex.toString())
-                .setAutoCancel(true)
-                .getNotification();
+        // Notification n = new Notification.Builder(this)
+        //         .setSmallIcon(android.R.drawable.stat_notify_error)
+        //         .setContentTitle("Silent Alert FAILED")
+        //         .setContentText(ex.toString())
+        //         .setAutoCancel(true)
+        //         .getNotification();
 
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        mLastNotificationId++;
+        // mLastNotificationId++;
 
-        notificationManager.notify(mLastNotificationId, n);
+        // notificationManager.notify(mLastNotificationId, n);
+
+        Log.e(TAG, "Silent Alert FAILED: " + ex.toString());
     }
 
     @Override
