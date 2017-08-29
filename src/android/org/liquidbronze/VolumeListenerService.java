@@ -144,11 +144,16 @@ public class VolumeListenerService extends Service {
 
         if (mAccessToken == null || mLocation == null) return Service.START_REDELIVER_INTENT;
 
-        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-        mMediaPlayer = MediaPlayer.create(getApplicationContext(), notification);
-        mMediaPlayer.setLooping(true);
-        mMediaPlayer.setVolume(0, 0);
-        mMediaPlayer.start();
+        Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        mMediaPlayer = MediaPlayer.create(getApplicationContext(), ringtone);
+
+        if (mMediaPlayer != null) {
+            mMediaPlayer.setLooping(true);
+            mMediaPlayer.setVolume(0, 0);
+            mMediaPlayer.start();
+        } else {
+            showToastInIntentService("Played to start media player");
+        }
 
         AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
@@ -366,20 +371,18 @@ public class VolumeListenerService extends Service {
     }
 
     private void failureNotification(Exception ex) {
-        // Notification n = new Notification.Builder(this)
-        //         .setSmallIcon(android.R.drawable.stat_notify_error)
-        //         .setContentTitle("Silent Alert FAILED")
-        //         .setContentText(ex.toString())
-        //         .setAutoCancel(true)
-        //         .getNotification();
+        Notification n = new Notification.Builder(this)
+                .setSmallIcon(android.R.drawable.stat_notify_error)
+                .setContentTitle("Silent Alert FAILED")
+                .setContentText(ex.toString())
+                .setAutoCancel(true)
+                .getNotification();
 
-        // NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        // mLastNotificationId++;
+        mLastNotificationId++;
 
-        // notificationManager.notify(mLastNotificationId, n);
-
-        Log.e(TAG, "Silent Alert FAILED: " + ex.toString());
+        notificationManager.notify(mLastNotificationId, n);
     }
 
     @Override

@@ -12,7 +12,9 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Acquiring new location..."
+        android:text="Acquiring GPS location...
+
+If this screen persists please move phone where the sky can be seen."
         android:textAlignment="center"
         android:textSize="24sp"
         tools:layout_editor_absoluteX="8dp"

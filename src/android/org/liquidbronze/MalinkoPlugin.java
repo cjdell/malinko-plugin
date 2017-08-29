@@ -2,22 +2,19 @@
  */
 package org.liquidbronze;
 
+import android.app.ActivityManager;
+import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
-import org.apache.cordova.PluginResult.Status;
-import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
-
-import android.app.ActivityManager;
-import android.content.Context;
-import android.util.Log;
-import android.content.Intent;
-
-import java.util.Date;
+import org.json.JSONObject;
 
 public class MalinkoPlugin extends CordovaPlugin {
     private static final String TAG = "MalinkoPlugin";
