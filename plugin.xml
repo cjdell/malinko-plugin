@@ -40,8 +40,10 @@
 
       <config-file target="AndroidManifest.xml" parent="/manifest/application">
         <service android:name="org.liquidbronze.VolumeListenerService" />
-        <activity android:label="Location" android:name="org.liquidbronze.LocationActivity" android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity android:label="Location" android:name="org.liquidbronze.LocationActivity" />
       </config-file>
+
+      <framework src="src/android/easylocation.gradle" custom="true" type="gradleReference" />
     </platform>
 
     <!-- ios -->
